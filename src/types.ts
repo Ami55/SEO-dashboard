@@ -169,7 +169,8 @@ export type ActiveTab =
   | 'google-algorithm-updates'
   | 'custom-insights'
   | 'insight-wrap-up'
-  | 'gsc-calculated-dimensions';
+  | 'gsc-calculated-dimensions'
+  | 'upload-data';
 
 export interface GoogleAlgorithmUpdateEvent {
   id: string;

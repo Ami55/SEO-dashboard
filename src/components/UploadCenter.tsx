@@ -133,6 +133,63 @@ export default function UploadCenter({
       return;
     }
 
+    // Google Search Console comparison exports contain two complete metric sets
+    // in the same CSV. Import both automatically and assign the later range to
+    // current and the earlier range to previous.
+    const header = parsedRows[detectedMap.headerRowIndex] || [];
+    const metricIndexes = (pattern: RegExp) =>
+      header.reduce<number[]>((indexes, cell, index) => {
+        if (pattern.test(cell.toLowerCase())) indexes.push(index);
+        return indexes;
+      }, []);
+    const clicksIndexes = metricIndexes(/click|clic|klick/);
+    const impressionsIndexes = metricIndexes(/impress|impres|vertoning/);
+    const ctrIndexes = metricIndexes(/\bctr\b|click.through|klickrate/);
+    const positionIndexes = metricIndexes(/position|posicion|posicao|positie|\brank\b/);
+
+    if (clicksIndexes.length >= 2 && impressionsIndexes.length >= 2) {
+      const getRangeTimestamp = (index: number) => {
+        const start = (header[index] || '').split(/\s+-\s+/)[0].trim();
+        const parsed = Date.parse(start);
+        return Number.isNaN(parsed) ? index : parsed;
+      };
+      const ordered = [0, 1].sort(
+        (a, b) => getRangeTimestamp(clicksIndexes[a]) - getRangeTimestamp(clicksIndexes[b])
+      );
+      const previousSet = ordered[0];
+      const currentSet = ordered[1];
+      const mappingFor = (setIndex: number): ColumnMapping => ({
+        ...detectedMap,
+        clicksIndex: clicksIndexes[setIndex],
+        impressionsIndex: impressionsIndexes[setIndex],
+        ctrIndex: ctrIndexes[setIndex] ?? -1,
+        positionIndex: positionIndexes[setIndex] ?? -1,
+      });
+      const previousMapped = mapCsvRows(parsedRows, 'previous', mappingFor(previousSet), fileName);
+      const currentMapped = mapCsvRows(parsedRows, 'current', mappingFor(currentSet), fileName);
+      const merge = <T,>(a: T[], b: T[]) => [...a, ...b];
+      const pages = merge(previousMapped.pages, currentMapped.pages);
+      const queries = merge(previousMapped.queries, currentMapped.queries);
+      const combined = merge(previousMapped.combined, currentMapped.combined);
+      const countries = merge(previousMapped.countries, currentMapped.countries);
+      const devices = merge(previousMapped.devices, currentMapped.devices);
+      const appearances = merge(previousMapped.appearances, currentMapped.appearances);
+      const dates = merge(previousMapped.dates, currentMapped.dates);
+      const totalMapped = pages.length + queries.length + combined.length + countries.length + devices.length + appearances.length + dates.length;
+
+      onAddData(
+        { fileName, type: currentMapped.detectedType, period: 'current' },
+        pages,
+        queries,
+        combined,
+        countries,
+        devices,
+        appearances,
+        dates
+      );
+      return { totalMapped, type: currentMapped.detectedType };
+    }
+
     const mapped = mapCsvRows(parsedRows, targetPeriod, detectedMap, fileName);
     const totalMapped =
       mapped.pages.length +
@@ -191,6 +248,7 @@ export default function UploadCenter({
           if (!zipEntry.dir && relativePath.toLowerCase().endsWith('.csv')) {
             const entryText = await zipEntry.async('text');
             const cleanEntryName = relativePath.split('/').pop() || relativePath;
+            if (/^filters?\.csv$/i.test(cleanEntryName)) continue;
 
             const isPrev =
               cleanEntryName.toLowerCase().includes('prev') ||

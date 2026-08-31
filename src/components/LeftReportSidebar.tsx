@@ -42,6 +42,13 @@ export interface ReportItem {
 }
 
 export const REPORT_MENU_ITEMS: ReportItem[] = [
+  {
+    id: 'upload-data',
+    title: 'Upload GSC Data',
+    category: 'core',
+    badge: 'Data',
+    icon: Database,
+  },
   // Category & Template Performance
   {
     id: 'category-performance-matrix',

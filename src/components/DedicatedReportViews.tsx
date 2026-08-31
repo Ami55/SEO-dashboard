@@ -13,8 +13,8 @@ import {
   CannibalisationQuery,
 } from '../types';
 import {
-  TOURS_PAGES,
-  TOURS_QUERIES,
+  TOURS_PAGES as DEMO_TOURS_PAGES,
+  TOURS_QUERIES as DEMO_TOURS_QUERIES,
   CANNIBALISATION_QUERIES,
   COUNTRY_PERFORMANCE_DATA,
   DEVICE_PERFORMANCE_DATA,
@@ -72,6 +72,8 @@ interface DedicatedReportViewProps {
   propertyTotals: PropertyTotals;
   filters: DashboardFilterState;
   onFilterChange?: (filters: DashboardFilterState) => void;
+  pages?: TblPageItem[];
+  queries?: TblQueryItem[];
 }
 
 // Color palette with emerald green as primary
@@ -82,6 +84,8 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   propertyTotals,
   filters,
   onFilterChange,
+  pages = DEMO_TOURS_PAGES,
+  queries = DEMO_TOURS_QUERIES,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroupFilter, setSelectedGroupFilter] = useState('ALL');
@@ -115,7 +119,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
       <CategoryHierarchyPerformanceSection
         propertyTotals={propertyTotals}
         filters={filters}
-        pages={TOURS_PAGES}
+        pages={pages}
       />
     );
   }
@@ -124,7 +128,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 1. Performance by Page Group & Landing Page
   // =========================================================================
   if (reportId === 'perf-page-group-landing') {
-    const filteredPages = TOURS_PAGES.filter((p) => {
+    const filteredPages = pages.filter((p) => {
       const matchesSearch = p.page.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesGroup = selectedGroupFilter === 'ALL' || p.pageGroup === selectedGroupFilter;
       return matchesSearch && matchesGroup;
@@ -298,7 +302,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 2. Search Query Performance
   // =========================================================================
   if (reportId === 'search-query-performance') {
-    const filteredQueries = TOURS_QUERIES.filter((q) =>
+    const filteredQueries = queries.filter((q) =>
       q.query.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -506,8 +510,8 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
       return (p.clicks ?? 0) - (p.prevClicks ?? p.clicks ?? 0);
     };
 
-    const winners = TOURS_PAGES.filter((p) => getPageGain(p) > 0).sort((a, b) => getPageGain(b) - getPageGain(a));
-    const decliners = TOURS_PAGES.filter((p) => getPageGain(p) < 0).sort((a, b) => getPageGain(a) - getPageGain(b));
+    const winners = pages.filter((p) => getPageGain(p) > 0).sort((a, b) => getPageGain(b) - getPageGain(a));
+    const decliners = pages.filter((p) => getPageGain(p) < 0).sort((a, b) => getPageGain(a) - getPageGain(b));
 
     const totalWonClicks = winners.reduce((acc, w) => acc + getPageGain(w), 0);
     const totalLostClicks = decliners.reduce((acc, d) => acc + Math.abs(getPageGain(d)), 0);
@@ -843,7 +847,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 7. Top 10 Pages by Organic Clicks
   // =========================================================================
   if (reportId === 'top-10-pages-clicks') {
-    const top10 = [...TOURS_PAGES].sort((a, b) => b.clicks - a.clicks).slice(0, 10);
+    const top10 = [...pages].sort((a, b) => b.clicks - a.clicks).slice(0, 10);
 
     return (
       <div className="space-y-6" id="report-top-10-pages-clicks">
@@ -932,7 +936,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
               <button
                 onClick={() =>
                   exportCsv(
-                    TOURS_QUERIES.map((q) => ({
+                    queries.map((q) => ({
                       query: q.query,
                       landingPage: q.landingPage,
                       position: q.position.toFixed(1),
@@ -1087,7 +1091,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-sans">
-                {TOURS_QUERIES.slice(0, 10).map((q) => {
+                {queries.slice(0, 10).map((q) => {
                   const isTop3 = q.position <= 3.9;
                   const isP1 = q.position <= 10.0;
                   return (
@@ -1126,7 +1130,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 9. SEO Quick Wins: High-Visibility Queries Near the Top
   // =========================================================================
   if (reportId === 'seo-quick-wins') {
-    const quickWins = TOURS_QUERIES.filter((q) => q.position >= 4 && q.position <= 12 && q.impressions > 50000).sort(
+    const quickWins = queries.filter((q) => q.position >= 4 && q.position <= 12 && q.impressions > 50000).sort(
       (a, b) => b.impressions - a.impressions
     );
 
@@ -1194,7 +1198,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 10. Organic Traffic Concentration (Pareto Curve & Portfolio Risk)
   // =========================================================================
   if (reportId === 'organic-traffic-concentration') {
-    const sortedPages = [...TOURS_PAGES].sort((a, b) => b.clicks - a.clicks);
+    const sortedPages = [...pages].sort((a, b) => b.clicks - a.clicks);
     const totalSiteClicks = propertyTotals.currentClicks;
 
     // Build Pareto Lorenz curve data
@@ -1385,7 +1389,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 11. Non-Branded SEO Opportunities
   // =========================================================================
   if (reportId === 'non-branded-opportunities') {
-    const nonBranded = TOURS_QUERIES.filter((q) => q.queryType === 'Non-Branded').sort((a, b) => b.clicks - a.clicks);
+    const nonBranded = queries.filter((q) => q.queryType === 'Non-Branded').sort((a, b) => b.clicks - a.clicks);
 
     return (
       <div className="space-y-6" id="report-non-branded-opportunities">
@@ -1433,7 +1437,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 12. High-Impression Queries Below Page One
   // =========================================================================
   if (reportId === 'high-imp-below-p1') {
-    const belowP1 = TOURS_QUERIES.filter((q) => q.position > 10).sort((a, b) => b.impressions - a.impressions);
+    const belowP1 = queries.filter((q) => q.position > 10).sort((a, b) => b.impressions - a.impressions);
 
     return (
       <div className="space-y-6" id="report-high-imp-below-p1">
@@ -1473,8 +1477,8 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 13. Branded vs Non-Branded Search Performance
   // =========================================================================
   if (reportId === 'branded-vs-non-branded') {
-    const brandedClicks = TOURS_QUERIES.filter((q) => q.queryType === 'Branded').reduce((acc, q) => acc + q.clicks, 0);
-    const nonBrandedClicks = TOURS_QUERIES.filter((q) => q.queryType === 'Non-Branded').reduce((acc, q) => acc + q.clicks, 0);
+    const brandedClicks = queries.filter((q) => q.queryType === 'Branded').reduce((acc, q) => acc + q.clicks, 0);
+    const nonBrandedClicks = queries.filter((q) => q.queryType === 'Non-Branded').reduce((acc, q) => acc + q.clicks, 0);
 
     return (
       <div className="space-y-6" id="report-branded-vs-non-branded">
@@ -1547,7 +1551,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 15. Low-CTR Opportunities
   // =========================================================================
   if (reportId === 'low-ctr-opportunities') {
-    const lowCtr = TOURS_QUERIES.filter((q) => q.position <= 5 && q.ctr < 0.02).sort((a, b) => b.impressions - a.impressions);
+    const lowCtr = queries.filter((q) => q.position <= 5 && q.ctr < 0.02).sort((a, b) => b.impressions - a.impressions);
 
     return (
       <div className="space-y-6" id="report-low-ctr-opportunities">

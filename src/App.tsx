@@ -8,6 +8,16 @@ import {
   ActiveTab,
   DashboardFilterState,
   PropertyTotals,
+  LoadedFile,
+  PagePerformance,
+  QueryPerformance,
+  PageQueryPerformance,
+  CountryPerformance,
+  DevicePerformance,
+  SearchAppearancePerformance,
+  DatePerformance,
+  TblPageItem,
+  TblQueryItem,
 } from './types';
 import {
   TOURS_PAGES,
@@ -36,10 +46,115 @@ import { GeographicDeviceSection } from './components/GeographicDeviceSection';
 import { PageGroupLevelPerformanceView } from './components/PageGroupLevelPerformanceView';
 import { TaxonomyClassificationSection } from './components/TaxonomyClassificationSection';
 import { MethodologyDataQualitySection } from './components/MethodologyDataQualitySection';
+import UploadCenter from './components/UploadCenter';
+import { calculateGscPageGroup, calculateGscPageLevel } from './utils/gscTaxonomyEngine';
+
+function mergePages(rows: PagePerformance[]): TblPageItem[] {
+  const grouped = new Map<string, { current?: PagePerformance; previous?: PagePerformance }>();
+  rows.forEach((row) => {
+    const entry = grouped.get(row.page) || {};
+    entry[row.period] = row;
+    grouped.set(row.page, entry);
+  });
+  return Array.from(grouped.entries()).map(([page, periods], index) => {
+    const current = periods.current || { page, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'current' as const };
+    const previous = periods.previous || { page, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'previous' as const };
+    return {
+      id: `uploaded-page-${index}`,
+      page,
+      pageGroup: calculateGscPageGroup(page),
+      pageLevel: calculateGscPageLevel(page),
+      clicks: current.clicks,
+      impressions: current.impressions,
+      ctr: current.ctr,
+      position: current.position,
+      prevClicks: previous.clicks,
+      prevImpressions: previous.impressions,
+      prevCtr: previous.ctr,
+      prevPosition: previous.position,
+      clickGain: current.clicks - previous.clicks,
+    };
+  });
+}
+
+function mergeQueries(rows: QueryPerformance[]): TblQueryItem[] {
+  const grouped = new Map<string, { current?: QueryPerformance; previous?: QueryPerformance }>();
+  rows.forEach((row) => {
+    const entry = grouped.get(row.query) || {};
+    entry[row.period] = row;
+    grouped.set(row.query, entry);
+  });
+  return Array.from(grouped.entries()).map(([query, periods], index) => {
+    const current = periods.current || { query, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'current' as const };
+    const previous = periods.previous || { query, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'previous' as const };
+    const branded = /tours\s*by\s*locals|toursbylocals/i.test(query);
+    return {
+      id: `uploaded-query-${index}`,
+      query,
+      queryType: branded ? 'Branded' : 'Non-Branded',
+      queryTheme: 'Unclassified Query Theme',
+      clicks: current.clicks,
+      impressions: current.impressions,
+      ctr: current.ctr,
+      position: current.position,
+      prevClicks: previous.clicks,
+      prevImpressions: previous.impressions,
+      prevCtr: previous.ctr,
+      prevPosition: previous.position,
+      clickChange: current.clicks - previous.clicks,
+      impressionChange: current.impressions - previous.impressions,
+      positionChange: previous.position - current.position,
+    };
+  });
+}
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<ActiveTab>('perf-page-group-landing');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [loadedFiles, setLoadedFiles] = useState<LoadedFile[]>([]);
+  const [uploadedPages, setUploadedPages] = useState<PagePerformance[]>([]);
+  const [uploadedQueries, setUploadedQueries] = useState<QueryPerformance[]>([]);
+  const [uploadedCountries, setUploadedCountries] = useState<CountryPerformance[]>([]);
+  const [uploadedDevices, setUploadedDevices] = useState<DevicePerformance[]>([]);
+  const [uploadedCombined, setUploadedCombined] = useState<PageQueryPerformance[]>([]);
+  const [uploadedAppearances, setUploadedAppearances] = useState<SearchAppearancePerformance[]>([]);
+  const [uploadedDates, setUploadedDates] = useState<DatePerformance[]>([]);
+
+  const hasUploadedData = loadedFiles.length > 0;
+  const activePages = useMemo(() => hasUploadedData && uploadedPages.length ? mergePages(uploadedPages) : TOURS_PAGES, [hasUploadedData, uploadedPages]);
+  const activeQueries = useMemo(() => hasUploadedData && uploadedQueries.length ? mergeQueries(uploadedQueries) : TOURS_QUERIES, [hasUploadedData, uploadedQueries]);
+
+  const clearUploadedData = () => {
+    setLoadedFiles([]);
+    setUploadedPages([]);
+    setUploadedQueries([]);
+    setUploadedCountries([]);
+    setUploadedDevices([]);
+    setUploadedCombined([]);
+    setUploadedAppearances([]);
+    setUploadedDates([]);
+  };
+
+  const handleAddData = (
+    fileInfo: Omit<LoadedFile, 'id' | 'uploadedAt' | 'rowCount'>,
+    pages: PagePerformance[],
+    queries: QueryPerformance[],
+    combined: PageQueryPerformance[],
+    countries: CountryPerformance[] = [],
+    devices: DevicePerformance[] = [],
+    appearances: SearchAppearancePerformance[] = [],
+    dates: DatePerformance[] = []
+  ) => {
+    const rowCount = pages.length + queries.length + combined.length + countries.length + devices.length + appearances.length + dates.length;
+    setLoadedFiles((existing) => [...existing, { ...fileInfo, id: crypto.randomUUID(), uploadedAt: new Date().toISOString(), rowCount }]);
+    setUploadedPages((existing) => [...existing, ...pages]);
+    setUploadedQueries((existing) => [...existing, ...queries]);
+    setUploadedCombined((existing) => [...existing, ...combined]);
+    setUploadedCountries((existing) => [...existing, ...countries]);
+    setUploadedDevices((existing) => [...existing, ...devices]);
+    setUploadedAppearances((existing) => [...existing, ...appearances]);
+    setUploadedDates((existing) => [...existing, ...dates]);
+  };
 
   // Global Filter State conforming to Dashboard Filter State specification
   const [filters, setFilters] = useState<DashboardFilterState>({
@@ -67,6 +182,27 @@ export default function App() {
 
   // Calculate filtered or simulated totals
   const propertyTotals: PropertyTotals = useMemo(() => {
+    if (hasUploadedData && activePages.length) {
+      const currentClicks = activePages.reduce((sum, page) => sum + page.clicks, 0);
+      const currentImpressions = activePages.reduce((sum, page) => sum + page.impressions, 0);
+      const previousClicks = activePages.reduce((sum, page) => sum + page.prevClicks, 0);
+      const previousImpressions = activePages.reduce((sum, page) => sum + page.prevImpressions, 0);
+      const weightedPosition = activePages.reduce((sum, page) => sum + page.position * page.impressions, 0) / Math.max(1, currentImpressions);
+      const previousWeightedPosition = activePages.reduce((sum, page) => sum + page.prevPosition * page.prevImpressions, 0) / Math.max(1, previousImpressions);
+      return {
+        ...PROPERTY_TOTALS,
+        propertyName: 'Uploaded GSC export',
+        lastRefreshed: new Date().toISOString(),
+        currentClicks,
+        previousClicks,
+        currentImpressions,
+        previousImpressions,
+        currentCtr: currentClicks / Math.max(1, currentImpressions),
+        previousCtr: previousClicks / Math.max(1, previousImpressions),
+        currentPosition: weightedPosition,
+        previousPosition: previousWeightedPosition,
+      };
+    }
     // For custom date ranges or device/country adjustments, scale totals proportionally
     let scale = 1.0;
     if (filters.dateRange === 'LAST_28_DAYS' || filters.datePreset === 'Last 28 complete days') scale = 28 / 365;
@@ -82,7 +218,7 @@ export default function App() {
       previousImpressions: Math.round(PROPERTY_TOTALS.previousImpressions * scale),
       prevImpressions: Math.round(PROPERTY_TOTALS.previousImpressions * scale),
     };
-  }, [filters.dateRange, filters.datePreset]);
+  }, [filters.dateRange, filters.datePreset, hasUploadedData, activePages]);
 
   // Generate continuous time series for the performance charts
   const timeSeries = useMemo(() => {
@@ -140,6 +276,18 @@ export default function App() {
               propertyTotals={propertyTotals}
               filters={filters}
               onFilterChange={setFilters}
+              pages={activePages}
+              queries={activeQueries}
+            />
+          )}
+
+          {activeSection === 'upload-data' && (
+            <UploadCenter
+              loadedFiles={loadedFiles}
+              onAddData={handleAddData}
+              onDeleteFile={() => clearUploadedData()}
+              onLoadDemoData={clearUploadedData}
+              onClearAllData={clearUploadedData}
             />
           )}
 
@@ -147,8 +295,8 @@ export default function App() {
           {(activeSection === 'executive' || activeSection === 'executive-summary') && (
             <ExecutiveSummarySection
               propertyTotals={propertyTotals}
-              pages={TOURS_PAGES}
-              queries={TOURS_QUERIES}
+              pages={activePages}
+              queries={activeQueries}
               actions={RECOMMENDED_ACTIONS}
               filters={filters}
               setActiveTab={setActiveSection}
@@ -169,7 +317,7 @@ export default function App() {
           {/* Section 3: Page and Directory Performance */}
           {(activeSection === 'pages' || activeSection === 'page-directory') && (
             <PageDirectoryPerformanceSection
-              pages={TOURS_PAGES}
+              pages={activePages}
               propertyTotals={propertyTotals}
               filters={filters}
             />
@@ -178,7 +326,7 @@ export default function App() {
           {/* Section 4: Page Group & Level Multi-Select Performance */}
           {activeSection === 'page-group-level' && (
             <PageGroupLevelPerformanceView
-              pages={TOURS_PAGES}
+              pages={activePages}
               propertyTotals={propertyTotals}
               filters={filters}
               onFilterChange={setFilters}
@@ -188,7 +336,7 @@ export default function App() {
           {/* Section 5: Query and Content Opportunities */}
           {(activeSection === 'queries' || activeSection === 'query-opportunities') && (
             <QueryOpportunitiesSection
-              queries={TOURS_QUERIES}
+              queries={activeQueries}
               cannibalisationQueries={CANNIBALISATION_QUERIES}
               propertyTotals={propertyTotals}
               filters={filters}
