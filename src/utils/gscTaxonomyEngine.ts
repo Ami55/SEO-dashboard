@@ -212,23 +212,38 @@ export function classifyToursByLocalsUrl(landingPage: string): { pageGroup: Page
   if (segments.length === 0) return { pageGroup: 'Homepage', pageLevel: 'Site Root' };
   const [root] = segments;
 
+  // Specific templates always win over their parent directory.
+  if (segments.includes('tour-details')) {
+    return { pageGroup: 'Tour Details', pageLevel: 'Tour Detail Page' };
+  }
+  if (segments.includes('attractions')) {
+    return {
+      pageGroup: 'Attractions',
+      pageLevel: root === 'tour-guides' ? 'Attraction Guide Page' : 'Attraction Page',
+    };
+  }
+  if (segments[segments.length - 1] === 'shore-ex-tours') {
+    return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination / Port Page' };
+  }
+  if (segments[segments.length - 1] === 'essentials-tours') {
+    return {
+      pageGroup: 'Essential Tours',
+      pageLevel: segments.length === 2 ? 'Global Landing Page' : 'City Landing Page',
+    };
+  }
+
   if (root === 'tours') {
-    if (segments[1] === 'essentials-tours') return { pageGroup: 'Essential Tours', pageLevel: 'Special Landing Page' };
-    if (segments[3] === 'tour-details' && segments[4]) return { pageGroup: 'Tour Details', pageLevel: 'Tour Detail Page' };
-    if (segments[3] === 'attractions' && segments[4]) return { pageGroup: 'Attractions', pageLevel: 'Attraction Page' };
-    if (segments[3] === 'shore-ex-tours') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination Page' };
     if (segments.length === 1) return { pageGroup: 'Tours', pageLevel: 'Directory Root' };
     if (segments.length === 2) return { pageGroup: 'Tours', pageLevel: 'Country Page' };
-    if (segments.length === 3) return { pageGroup: 'Tours', pageLevel: 'City or Area Page' };
+    if (segments.length === 3) return { pageGroup: 'Tours', pageLevel: 'City Page' };
     if (segments.length >= 4) return { pageGroup: 'Tours', pageLevel: 'Tour Category Page' };
   }
 
   if (root === 'tour-guides') {
     if (segments[3] === 'guide-profile' && segments[4]) return { pageGroup: 'Guide Profiles', pageLevel: 'Guide Profile Page' };
-    if (segments[3] === 'attractions' && segments[4]) return { pageGroup: 'Attractions', pageLevel: 'Attraction Guide Page' };
     if (segments.length === 1) return { pageGroup: 'Tour Guides', pageLevel: 'Directory Root' };
     if (segments.length === 2) return { pageGroup: 'Tour Guides', pageLevel: 'Country Page' };
-    if (segments.length === 3) return { pageGroup: 'Tour Guides', pageLevel: 'City or Area Page' };
+    if (segments.length === 3) return { pageGroup: 'Tour Guides', pageLevel: 'City Page' };
     if (segments.length >= 4) return { pageGroup: 'Tour Guides', pageLevel: 'Tour Category Page' };
   }
 
@@ -236,19 +251,20 @@ export function classifyToursByLocalsUrl(landingPage: string): { pageGroup: Page
     if (segments.length === 1) return { pageGroup: 'Shore Excursions', pageLevel: 'Directory Root' };
     if (segments[1] === 'cruise-lines') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Line Page' };
     if (segments[1] === 'cruise-ships') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Ship Page' };
-    return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination Page' };
+    if (segments.length === 2) return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Line Page' };
+    return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination / Port Page' };
   }
 
   if (root === 'safaris') {
     if (segments.length === 1) return { pageGroup: 'Safaris', pageLevel: 'Directory Root' };
     if (segments.length === 2) return { pageGroup: 'Safaris', pageLevel: 'Country Page' };
-    return { pageGroup: 'Safaris', pageLevel: 'City or Area Page' };
+    return { pageGroup: 'Safaris', pageLevel: 'City Page' };
   }
 
   if (root === 'things-to-do') {
     if (segments.length === 1) return { pageGroup: 'Things to Do', pageLevel: 'Directory Root' };
     if (segments.length === 2) return { pageGroup: 'Things to Do', pageLevel: 'Country Page' };
-    return { pageGroup: 'Things to Do', pageLevel: 'City or Area Page' };
+    return { pageGroup: 'Things to Do', pageLevel: 'City Page' };
   }
 
   if (root === 'travel-blog') {

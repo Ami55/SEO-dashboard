@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Download, Search, UploadCloud } from 'lucide-react';
+import { ChevronDown, ChevronRight, Download, ExternalLink, Search, UploadCloud } from 'lucide-react';
 import { TblPageItem } from '../types';
 
 interface DirectoryPerformanceSectionProps {
@@ -8,6 +8,7 @@ interface DirectoryPerformanceSectionProps {
 
 export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionProps> = ({ pages }) => {
   const [search, setSearch] = useState('');
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const rows = useMemo(() => {
     const groups = new Map<string, any>();
     pages.forEach((page) => {
@@ -23,6 +24,7 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
         weightedPosition: 0,
         topUrl: '',
         topUrlClicks: -1,
+        items: [] as TblPageItem[],
       };
       row.pageCount += 1;
       row.clicks += page.clicks;
@@ -30,6 +32,7 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
       row.prevClicks += page.prevClicks;
       row.prevImpressions += page.prevImpressions;
       row.weightedPosition += page.position * page.impressions;
+      row.items.push(page);
       if (page.clicks > row.topUrlClicks) {
         row.topUrlClicks = page.clicks;
         row.topUrl = page.page;
@@ -42,10 +45,20 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
         ctr: row.clicks / Math.max(1, row.impressions),
         position: row.weightedPosition / Math.max(1, row.impressions),
         clickChange: row.clicks - row.prevClicks,
+        topPages: [...row.items].sort((a: TblPageItem, b: TblPageItem) => b.clicks - a.clicks).slice(0, 10),
       }))
       .filter((row) => `${row.pageGroup} ${row.pageLevel} ${row.topUrl}`.toLowerCase().includes(search.toLowerCase()))
       .sort((a, b) => b.impressions - a.impressions);
   }, [pages, search]);
+
+  const toggleExpanded = (key: string) => {
+    setExpanded((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const exportCsv = () => {
     const header = ['Page Group','Page Level','Pages','Clicks','Previous Clicks','Impressions','CTR','Weighted Position','Top URL'];
@@ -89,9 +102,18 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
               <tr>{['Directory','Page level','Pages','Clicks','Change','Impressions','CTR','Position','Top URL'].map((label) => <th key={label} className="text-left px-4 py-3">{label}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {rows.map((row) => (
-                <tr key={`${row.pageGroup}-${row.pageLevel}`} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-bold text-slate-900">{row.pageGroup}</td>
+              {rows.map((row) => {
+                const rowKey = `${row.pageGroup}-${row.pageLevel}`;
+                const isExpanded = expanded.has(rowKey);
+                return (
+                <React.Fragment key={rowKey}>
+                <tr className="hover:bg-slate-50 cursor-pointer" onClick={() => toggleExpanded(rowKey)}>
+                  <td className="px-4 py-3 font-bold text-slate-900">
+                    <span className="flex items-center gap-2">
+                      {isExpanded ? <ChevronDown className="w-4 h-4 text-emerald-600" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                      {row.pageGroup}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-slate-700">{row.pageLevel}</td>
                   <td className="px-4 py-3 font-mono">{row.pageCount.toLocaleString()}</td>
                   <td className="px-4 py-3 font-mono">{row.clicks.toLocaleString()}</td>
@@ -101,7 +123,51 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
                   <td className="px-4 py-3 font-mono">{row.position.toFixed(1)}</td>
                   <td className="px-4 py-3 max-w-xs truncate text-blue-700" title={row.topUrl}>{row.topUrl}</td>
                 </tr>
-              ))}
+                {isExpanded && (
+                  <tr>
+                    <td colSpan={9} className="p-0 bg-slate-50/80">
+                      <div className="px-8 py-5 border-y border-emerald-100">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h3 className="text-sm font-black text-slate-900">Top {Math.min(10, row.topPages.length)} pages — {row.pageGroup} / {row.pageLevel}</h3>
+                            <p className="text-[11px] text-slate-500 mt-0.5">Ranked by organic clicks in the uploaded GSC dataset.</p>
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">{row.pageCount.toLocaleString()} pages total</span>
+                        </div>
+                        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+                          <table className="w-full text-[11px]">
+                            <thead className="bg-slate-100 text-slate-600 uppercase tracking-wide">
+                              <tr>{['#','Page URL','Clicks','Previous','Change','Impressions','CTR','Position'].map((label) => <th key={label} className="text-left px-3 py-2">{label}</th>)}</tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {row.topPages.map((page: TblPageItem, index: number) => {
+                                const change = page.clicks - page.prevClicks;
+                                return (
+                                  <tr key={page.page} className="hover:bg-blue-50/40">
+                                    <td className="px-3 py-2 font-mono text-slate-400">{index + 1}</td>
+                                    <td className="px-3 py-2 max-w-xl">
+                                      <a href={page.page} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="flex items-center gap-1 text-blue-700 hover:underline truncate" title={page.page}>
+                                        <span className="truncate">{page.page}</span><ExternalLink className="w-3 h-3 shrink-0" />
+                                      </a>
+                                    </td>
+                                    <td className="px-3 py-2 font-mono font-bold">{page.clicks.toLocaleString()}</td>
+                                    <td className="px-3 py-2 font-mono">{page.prevClicks.toLocaleString()}</td>
+                                    <td className={`px-3 py-2 font-mono ${change >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>{change >= 0 ? '+' : ''}{change.toLocaleString()}</td>
+                                    <td className="px-3 py-2 font-mono">{page.impressions.toLocaleString()}</td>
+                                    <td className="px-3 py-2 font-mono">{(page.ctr * 100).toFixed(2)}%</td>
+                                    <td className="px-3 py-2 font-mono">{page.position.toFixed(1)}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                </React.Fragment>
+              );})}
             </tbody>
           </table>
         </div>

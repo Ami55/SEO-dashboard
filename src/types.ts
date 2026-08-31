@@ -44,6 +44,7 @@ export type PageLevel =
   | 'Special Landing Page'
   | 'Global Landing Page'
   | 'City / Area Landing Page'
+  | 'City Landing Page'
   | 'Tour Category Page'
   | 'Blog Post'
   | 'Pillar Page'
