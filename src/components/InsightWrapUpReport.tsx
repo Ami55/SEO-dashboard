@@ -44,8 +44,8 @@ import {
   PieChart,
   Pie,
 } from 'recharts';
-import { DashboardFilterState, PropertyTotals } from '../types';
-import { TOURS_QUERIES, TOURS_PAGES } from '../toursData';
+import { DashboardFilterState, PropertyTotals, TblPageItem, TblQueryItem } from '../types';
+import { TOURS_QUERIES as DEMO_QUERIES, TOURS_PAGES as DEMO_PAGES } from '../toursData';
 
 interface ActionItem {
   id: string;
@@ -176,11 +176,15 @@ interface InsightWrapUpReportProps {
   propertyTotals?: PropertyTotals;
   filters?: DashboardFilterState;
   onFilterChange?: (filters: DashboardFilterState) => void;
+  pages?: TblPageItem[];
+  queries?: TblQueryItem[];
 }
 
 export const InsightWrapUpReport: React.FC<InsightWrapUpReportProps> = ({
   propertyTotals,
   filters,
+  pages = DEMO_PAGES,
+  queries = DEMO_QUERIES,
 }) => {
   const [activeSection, setActiveSection] = useState<'wrap-up' | 'wins' | 'opportunities' | 'actions'>('wrap-up');
   const [actionItems, setActionItems] = useState<ActionItem[]>(INITIAL_ACTION_ITEMS);
@@ -240,7 +244,7 @@ ${actionItems
   // Big Wins Calculation
   const bigWinsData = useMemo(() => {
     // Top Gaining Pages
-    const topGainingPages = [...TOURS_PAGES]
+    const topGainingPages = [...pages]
       .filter((p) => p.prevClicks > 0)
       .map((p) => ({
         ...p,
@@ -251,12 +255,12 @@ ${actionItems
       .slice(0, 5);
 
     // CTR Benchmark Outperformers
-    const ctrOutperformers = TOURS_QUERIES.filter((q) => q.position <= 5 && q.ctr > 15)
+    const ctrOutperformers = queries.filter((q) => q.position <= 5 && q.ctr > 15)
       .sort((a, b) => b.ctr - a.ctr)
       .slice(0, 5);
 
     // Page 1 Conquests
-    const pageOneConquests = TOURS_QUERIES.filter((q) => q.position <= 3)
+    const pageOneConquests = queries.filter((q) => q.position <= 3)
       .sort((a, b) => b.clicks - a.clicks)
       .slice(0, 5);
 
@@ -265,7 +269,7 @@ ${actionItems
       ctrOutperformers,
       pageOneConquests,
     };
-  }, []);
+  }, [pages, queries]);
 
   // Filtered Action Items
   const filteredActions = useMemo(() => {

@@ -45,13 +45,15 @@ import {
   PieChart,
   Pie,
 } from 'recharts';
-import { DashboardFilterState, PropertyTotals } from '../types';
-import { TOURS_QUERIES, TOURS_PAGES } from '../toursData';
+import { DashboardFilterState, PropertyTotals, TblPageItem, TblQueryItem } from '../types';
+import { TOURS_QUERIES as DEMO_QUERIES, TOURS_PAGES as DEMO_PAGES } from '../toursData';
 
 interface CustomInsightsSuiteProps {
   propertyTotals: PropertyTotals;
   filters: DashboardFilterState;
   onFilterChange?: (filters: DashboardFilterState) => void;
+  pages?: TblPageItem[];
+  queries?: TblQueryItem[];
 }
 
 // Benchmark Expected CTR curve by position (Logarithmic industry baseline for travel & tourism SERPs)
@@ -71,6 +73,8 @@ const EXPECTED_CTR_BENCHMARK: Record<number, number> = {
 export const CustomInsightsSuite: React.FC<CustomInsightsSuiteProps> = ({
   propertyTotals,
   filters,
+  pages = DEMO_PAGES,
+  queries = DEMO_QUERIES,
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<
     'ctr-anomalies' | 'content-decay' | 'revenue-calculator' | 'serp-displacement' | 'mobile-parity' | 'intent-matrix'
@@ -83,7 +87,7 @@ export const CustomInsightsSuite: React.FC<CustomInsightsSuiteProps> = ({
 
   // 1. CTR Anomalies Data Calculation
   const ctrAnomalies = useMemo(() => {
-    return TOURS_QUERIES.map((q) => {
+    return queries.map((q) => {
       const roundedPos = Math.min(10, Math.max(1, Math.round(q.position)));
       const expectedCtr = EXPECTED_CTR_BENCHMARK[roundedPos] || 1.0;
       const actualCtr = q.ctr;
@@ -116,11 +120,11 @@ export const CustomInsightsSuite: React.FC<CustomInsightsSuiteProps> = ({
     })
       .filter((q) => q.position <= 10)
       .sort((a, b) => b.missedClicks - a.missedClicks);
-  }, []);
+  }, [queries]);
 
   // 2. Content Decay & Velocity Loss Early-Warning Data
   const contentDecayData = useMemo(() => {
-    return TOURS_PAGES.map((p) => {
+    return pages.map((p) => {
       // Calculate growth rate vs previous period
       const clicksGrowthRate = p.prevClicks > 0
         ? ((p.clicks - p.prevClicks) / p.prevClicks) * 100
@@ -156,7 +160,7 @@ export const CustomInsightsSuite: React.FC<CustomInsightsSuiteProps> = ({
         estimatedRiskClicks: Math.round(p.clicks * (Math.abs(Math.min(0, clicksGrowthRate)) / 100)),
       };
     }).sort((a, b) => a.clicksGrowthRate - b.clicksGrowthRate);
-  }, []);
+  }, [pages]);
 
   // 3. Mobile vs Desktop Parity Data
   const mobileParityData = useMemo(() => {
@@ -277,7 +281,7 @@ export const CustomInsightsSuite: React.FC<CustomInsightsSuiteProps> = ({
   // 5. Total Sized Revenue Opportunity Calculation
   const revenueForecast = useMemo(() => {
     // Look at striking distance queries (Pos 4 to 12)
-    const strikingDistanceQueries = TOURS_QUERIES.filter(
+    const strikingDistanceQueries = queries.filter(
       (q) => q.position >= 4.0 && q.position <= 12.0
     );
 

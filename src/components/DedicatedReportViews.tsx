@@ -11,6 +11,8 @@ import {
   TblPageItem,
   TblQueryItem,
   CannibalisationQuery,
+  CountryPerformance,
+  DevicePerformance,
 } from '../types';
 import {
   TOURS_PAGES as DEMO_TOURS_PAGES,
@@ -66,6 +68,7 @@ import {
 } from 'lucide-react';
 import { classifyUrlTaxonomy } from '../utils/sitemapClassifier';
 import { CategoryHierarchyPerformanceSection } from './CategoryHierarchyPerformanceSection';
+import { DirectoryPerformanceSection } from './DirectoryPerformanceSection';
 
 interface DedicatedReportViewProps {
   reportId: ActiveTab;
@@ -74,6 +77,8 @@ interface DedicatedReportViewProps {
   onFilterChange?: (filters: DashboardFilterState) => void;
   pages?: TblPageItem[];
   queries?: TblQueryItem[];
+  countries?: CountryPerformance[];
+  devices?: DevicePerformance[];
 }
 
 // Color palette with emerald green as primary
@@ -86,11 +91,35 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   onFilterChange,
   pages = DEMO_TOURS_PAGES,
   queries = DEMO_TOURS_QUERIES,
+  countries = COUNTRY_PERFORMANCE_DATA,
+  devices = DEVICE_PERFORMANCE_DATA,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroupFilter, setSelectedGroupFilter] = useState('ALL');
   const [sortField, setSortField] = useState<'clicks' | 'impressions' | 'ctr' | 'position'>('clicks');
   const [sortAsc, setSortAsc] = useState(false);
+  const pageGroupPerformance = useMemo(() => {
+    const groups = new Map<string, any>();
+    pages.forEach((page) => {
+      const group = groups.get(page.pageGroup) || {
+        pageGroup: page.pageGroup,
+        clicks: 0,
+        impressions: 0,
+        prevClicks: 0,
+        prevImpressions: 0,
+      };
+      group.clicks += page.clicks;
+      group.impressions += page.impressions;
+      group.prevClicks += page.prevClicks;
+      group.prevImpressions += page.prevImpressions;
+      groups.set(page.pageGroup, group);
+    });
+    return Array.from(groups.values()).map((group) => ({
+      ...group,
+      ctr: group.clicks / Math.max(1, group.impressions),
+      prevCtr: group.prevClicks / Math.max(1, group.prevImpressions),
+    }));
+  }, [pages]);
 
   // Common export CSV handler
   const exportCsv = (data: any[], filename: string) => {
@@ -115,13 +144,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
   // 0. Performance by Category & Page Level (City, Country, Detail, Attraction, Guide)
   // =========================================================================
   if (reportId === 'category-performance-matrix') {
-    return (
-      <CategoryHierarchyPerformanceSection
-        propertyTotals={propertyTotals}
-        filters={filters}
-        pages={pages}
-      />
-    );
+    return <DirectoryPerformanceSection pages={pages} />;
   }
 
   // =========================================================================
@@ -199,7 +222,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
           <h2 className="text-sm font-bold text-slate-900 mb-4">Traffic Share by Page Group</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={PAGE_GROUP_PERFORMANCE_DATA}>
+              <BarChart data={pageGroupPerformance}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="pageGroup" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
@@ -231,7 +254,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
               className="text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-slate-50 text-slate-700 w-full sm:w-auto"
             >
               <option value="ALL">All Page Groups</option>
-              {PAGE_GROUP_PERFORMANCE_DATA.map((pg) => (
+              {pageGroupPerformance.map((pg) => (
                 <option key={pg.pageGroup} value={pg.pageGroup}>
                   {pg.pageGroup}
                 </option>
@@ -400,7 +423,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
           <h2 className="text-sm font-bold text-slate-900 mb-4">Page Group Performance Comparison</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={PAGE_GROUP_PERFORMANCE_DATA} layout="vertical" margin={{ left: 50 }}>
+              <BarChart data={pageGroupPerformance} layout="vertical" margin={{ left: 50 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis dataKey="pageGroup" type="category" tick={{ fontSize: 11 }} width={120} />
@@ -799,7 +822,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={COUNTRY_PERFORMANCE_DATA.slice(0, 8)}>
+              <BarChart data={countries.slice(0, 8)}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="country" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
@@ -824,7 +847,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {COUNTRY_PERFORMANCE_DATA.map((c, i) => (
+              {countries.map((c, i) => (
                 <tr key={i} className="hover:bg-slate-50">
                   <td className="py-2.5 px-3 font-semibold text-slate-800">{c.country}</td>
                   <td className="py-2.5 px-3 font-bold text-blue-600">{c.clicks.toLocaleString()}</td>
@@ -1728,7 +1751,7 @@ export const DedicatedReportView: React.FC<DedicatedReportViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {DEVICE_PERFORMANCE_DATA.map((d, i) => (
+          {devices.map((d, i) => (
             <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">{d.device}</span>

@@ -184,43 +184,88 @@ END`;
  * Executes the exact Looker Studio / BigQuery GSC Data-Source Level Calculated Field regex formula for Page Group.
  */
 export function calculateGscPageGroup(landingPage: string): PageGroup {
-  const url = landingPage.trim();
-  const fullUrl = url.startsWith('http')
-    ? url
-    : `https://www.toursbylocals.com${url.startsWith('/') ? '' : '/'}${url}`;
-
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/essentials-tours\/?($|\?)/i.test(fullUrl)) {
-    return 'Essential Tours';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tour-guides\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Tour Guides';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/shore-excursions\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Shore Excursions';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/safaris\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Safaris';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/travel-blog\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Travel Blog';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/things-to-do\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Things to Do';
-  }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/?($|\/|\?)/i.test(fullUrl)) {
-    return 'Tours';
-  }
-  return 'Other';
+  return classifyToursByLocalsUrl(landingPage).pageGroup;
 }
 
 /**
  * Executes the exact Looker Studio / BigQuery GSC Data-Source Level Calculated Field regex formula for Page Level.
  */
 export function calculateGscPageLevel(landingPage: string): PageLevel {
+  return classifyToursByLocalsUrl(landingPage).pageLevel;
+}
+
+/** Canonical ToursByLocals directory classifier. Specific templates are
+ * evaluated before their parent directories to prevent detail, attraction,
+ * and guide-profile URLs from being rolled into generic Tours/Tour Guides. */
+export function classifyToursByLocalsUrl(landingPage: string): { pageGroup: PageGroup; pageLevel: PageLevel } {
   const url = landingPage.trim();
   const fullUrl = url.startsWith('http')
     ? url
     : `https://www.toursbylocals.com${url.startsWith('/') ? '' : '/'}${url}`;
+  let segments: string[] = [];
+  try {
+    segments = new URL(fullUrl).pathname.split('/').filter(Boolean);
+  } catch {
+    return { pageGroup: 'Other', pageLevel: 'Other' };
+  }
+
+  if (segments.length === 0) return { pageGroup: 'Homepage', pageLevel: 'Site Root' };
+  const [root] = segments;
+
+  if (root === 'tours') {
+    if (segments[1] === 'essentials-tours') return { pageGroup: 'Essential Tours', pageLevel: 'Special Landing Page' };
+    if (segments[3] === 'tour-details' && segments[4]) return { pageGroup: 'Tour Details', pageLevel: 'Tour Detail Page' };
+    if (segments[3] === 'attractions' && segments[4]) return { pageGroup: 'Attractions', pageLevel: 'Attraction Page' };
+    if (segments[3] === 'shore-ex-tours') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination Page' };
+    if (segments.length === 1) return { pageGroup: 'Tours', pageLevel: 'Directory Root' };
+    if (segments.length === 2) return { pageGroup: 'Tours', pageLevel: 'Country Page' };
+    if (segments.length === 3) return { pageGroup: 'Tours', pageLevel: 'City or Area Page' };
+    if (segments.length >= 4) return { pageGroup: 'Tours', pageLevel: 'Tour Category Page' };
+  }
+
+  if (root === 'tour-guides') {
+    if (segments[3] === 'guide-profile' && segments[4]) return { pageGroup: 'Guide Profiles', pageLevel: 'Guide Profile Page' };
+    if (segments[3] === 'attractions' && segments[4]) return { pageGroup: 'Attractions', pageLevel: 'Attraction Guide Page' };
+    if (segments.length === 1) return { pageGroup: 'Tour Guides', pageLevel: 'Directory Root' };
+    if (segments.length === 2) return { pageGroup: 'Tour Guides', pageLevel: 'Country Page' };
+    if (segments.length === 3) return { pageGroup: 'Tour Guides', pageLevel: 'City or Area Page' };
+    if (segments.length >= 4) return { pageGroup: 'Tour Guides', pageLevel: 'Tour Category Page' };
+  }
+
+  if (root === 'shore-excursions') {
+    if (segments.length === 1) return { pageGroup: 'Shore Excursions', pageLevel: 'Directory Root' };
+    if (segments[1] === 'cruise-lines') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Line Page' };
+    if (segments[1] === 'cruise-ships') return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Ship Page' };
+    return { pageGroup: 'Shore Excursions', pageLevel: 'Cruise Destination Page' };
+  }
+
+  if (root === 'safaris') {
+    if (segments.length === 1) return { pageGroup: 'Safaris', pageLevel: 'Directory Root' };
+    if (segments.length === 2) return { pageGroup: 'Safaris', pageLevel: 'Country Page' };
+    return { pageGroup: 'Safaris', pageLevel: 'City or Area Page' };
+  }
+
+  if (root === 'things-to-do') {
+    if (segments.length === 1) return { pageGroup: 'Things to Do', pageLevel: 'Directory Root' };
+    if (segments.length === 2) return { pageGroup: 'Things to Do', pageLevel: 'Country Page' };
+    return { pageGroup: 'Things to Do', pageLevel: 'City or Area Page' };
+  }
+
+  if (root === 'travel-blog') {
+    return { pageGroup: 'Travel Blog', pageLevel: segments.length === 1 ? 'Directory Root' : 'Blog Post' };
+  }
+
+  if (['login', 'signup', 'help'].includes(root)) {
+    return { pageGroup: 'Utility', pageLevel: 'Utility Page' };
+  }
+
+  if (['policy', 'become-a-guide', 'become-a-travel-agency', 'golden-guide-awards-2025'].includes(root)) {
+    return { pageGroup: 'Corporate and Informational', pageLevel: 'Informational Page' };
+  }
+
+  return { pageGroup: 'Other', pageLevel: 'Other' };
+  /* Legacy regex reference retained below for SQL parity documentation. */
+  /*
 
   if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/essentials-tours\/?($|\?)/i.test(fullUrl)) {
     return 'Special Landing Page';
@@ -279,7 +324,7 @@ export function calculateGscPageLevel(landingPage: string): PageLevel {
   if (/^https?:\/\/(www\.)?toursbylocals\.com\/safaris\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'City or Area Page';
   }
-  return 'Other';
+  return 'Other'; */
 }
 
 // =========================================================================

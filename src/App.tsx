@@ -18,6 +18,7 @@ import {
   DatePerformance,
   TblPageItem,
   TblQueryItem,
+  GscDailyTimeSeriesPoint,
 } from './types';
 import {
   TOURS_PAGES,
@@ -123,6 +124,36 @@ export default function App() {
   const hasUploadedData = loadedFiles.length > 0;
   const activePages = useMemo(() => hasUploadedData && uploadedPages.length ? mergePages(uploadedPages) : TOURS_PAGES, [hasUploadedData, uploadedPages]);
   const activeQueries = useMemo(() => hasUploadedData && uploadedQueries.length ? mergeQueries(uploadedQueries) : TOURS_QUERIES, [hasUploadedData, uploadedQueries]);
+  const activeCountries = useMemo(() => {
+    if (!hasUploadedData || !uploadedCountries.length) return COUNTRY_PERFORMANCE_DATA;
+    const grouped = new Map<string, CountryPerformance>();
+    uploadedCountries.forEach((row) => {
+      const existing: CountryPerformance = grouped.get(row.country) || { country: row.country, clicks: 0, impressions: 0, ctr: 0, position: 0 };
+      if (row.period === 'previous') {
+        existing.prevClicks = row.clicks;
+        existing.prevImpressions = row.impressions;
+        existing.prevCtr = row.ctr;
+        existing.prevPosition = row.position;
+      } else Object.assign(existing, row);
+      grouped.set(row.country, existing);
+    });
+    return Array.from(grouped.values());
+  }, [hasUploadedData, uploadedCountries]);
+  const activeDevices = useMemo(() => {
+    if (!hasUploadedData || !uploadedDevices.length) return DEVICE_PERFORMANCE_DATA;
+    const grouped = new Map<string, DevicePerformance>();
+    uploadedDevices.forEach((row) => {
+      const existing: DevicePerformance = grouped.get(row.device) || { device: row.device, clicks: 0, impressions: 0, ctr: 0, position: 0 };
+      if (row.period === 'previous') {
+        existing.prevClicks = row.clicks;
+        existing.prevImpressions = row.impressions;
+        existing.prevCtr = row.ctr;
+        existing.prevPosition = row.position;
+      } else Object.assign(existing, row);
+      grouped.set(row.device, existing);
+    });
+    return Array.from(grouped.values());
+  }, [hasUploadedData, uploadedDevices]);
 
   const clearUploadedData = () => {
     setLoadedFiles([]);
@@ -222,8 +253,46 @@ export default function App() {
 
   // Generate continuous time series for the performance charts
   const timeSeries = useMemo(() => {
+    if (hasUploadedData && uploadedDates.length) {
+      const grouped = new Map<string, GscDailyTimeSeriesPoint>();
+      uploadedDates.forEach((row) => {
+        const existing: GscDailyTimeSeriesPoint = grouped.get(row.date) || {
+          date: row.date,
+          formattedDate: row.date,
+          prevDate: row.date,
+          prevFormattedDate: row.date,
+          clicks: 0,
+          impressions: 0,
+          ctr: 0,
+          position: 0,
+          prevClicks: 0,
+          prevImpressions: 0,
+          prevCtr: 0,
+          prevPosition: 0,
+          byPageGroup: {},
+          brandedClicks: 0,
+          nonBrandedClicks: 0,
+          desktopClicks: 0,
+          mobileClicks: 0,
+          tabletClicks: 0,
+        };
+        if (row.period === 'previous') {
+          existing.prevClicks = row.clicks;
+          existing.prevImpressions = row.impressions;
+          existing.prevCtr = row.ctr;
+          existing.prevPosition = row.position;
+        } else {
+          existing.clicks = row.clicks;
+          existing.impressions = row.impressions;
+          existing.ctr = row.ctr;
+          existing.position = row.position;
+        }
+        grouped.set(row.date, existing);
+      });
+      return Array.from(grouped.values()).sort((a, b) => a.date.localeCompare(b.date));
+    }
     return generateDailyTimeSeries();
-  }, []);
+  }, [hasUploadedData, uploadedDates]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900 antialiased selection:bg-emerald-500 selection:text-white" id="seo-performance-dashboard">
@@ -237,6 +306,8 @@ export default function App() {
         setFilters={setFilters}
         onFilterChange={setFilters}
         propertyTotals={propertyTotals}
+        hasUploadedData={hasUploadedData}
+        loadedFileCount={loadedFiles.length}
       />
 
       {/* Main Container with Left Reports Sidebar & Active Stage */}
@@ -278,6 +349,8 @@ export default function App() {
               onFilterChange={setFilters}
               pages={activePages}
               queries={activeQueries}
+              countries={activeCountries}
+              devices={activeDevices}
             />
           )}
 
@@ -346,8 +419,8 @@ export default function App() {
           {/* Section 6: Geographic and Device Performance */}
           {(activeSection === 'geo-device' || activeSection === 'geographic-device') && (
             <GeographicDeviceSection
-              countries={COUNTRY_PERFORMANCE_DATA}
-              devices={DEVICE_PERFORMANCE_DATA}
+              countries={activeCountries}
+              devices={activeDevices}
               searchTypes={SEARCH_TYPE_DATA}
               propertyTotals={propertyTotals}
               filters={filters}
@@ -375,6 +448,8 @@ export default function App() {
               propertyTotals={propertyTotals}
               filters={filters}
               onFilterChange={setFilters}
+              pages={activePages}
+              queries={activeQueries}
             />
           )}
 
@@ -384,6 +459,8 @@ export default function App() {
               propertyTotals={propertyTotals}
               filters={filters}
               onFilterChange={setFilters}
+              pages={activePages}
+              queries={activeQueries}
             />
           )}
 

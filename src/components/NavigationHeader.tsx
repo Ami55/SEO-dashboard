@@ -25,6 +25,7 @@ import {
   X,
   Sparkles,
   Trophy,
+  UploadCloud,
 } from 'lucide-react';
 import { ActiveTab, DashboardFilterState, PropertyTotals } from '../types';
 import { FilterDropdownPanel } from './FilterDropdownPanel';
@@ -42,6 +43,8 @@ interface NavigationHeaderProps {
   setFilters?: React.Dispatch<React.SetStateAction<DashboardFilterState>>;
   onFilterChange?: React.Dispatch<React.SetStateAction<DashboardFilterState>>;
   propertyTotals: PropertyTotals;
+  hasUploadedData?: boolean;
+  loadedFileCount?: number;
 }
 
 export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
@@ -53,6 +56,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   setFilters,
   onFilterChange,
   propertyTotals,
+  hasUploadedData = false,
+  loadedFileCount = 0,
 }) => {
   const currentTab = activeTab || activeSection || 'executive-summary';
   const handleSelectTab = (tab: ActiveTab) => {
@@ -173,6 +178,24 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         {/* Audit & Freshness Badges */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <button
+            onClick={() => handleSelectTab('upload-data')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-black transition-all cursor-pointer shadow-lg ${
+              currentTab === 'upload-data'
+                ? 'bg-white text-emerald-800 border-white ring-4 ring-emerald-400/30'
+                : 'bg-emerald-500 text-slate-950 border-emerald-300 hover:bg-emerald-400 hover:scale-[1.02] shadow-emerald-500/25'
+            }`}
+            title="Upload fresh Google Search Console CSV or ZIP exports"
+          >
+            <UploadCloud className="w-4 h-4" />
+            <span>UPLOAD GSC DATA</span>
+            {hasUploadedData && (
+              <span className="px-2 py-0.5 rounded-full bg-slate-950 text-emerald-300 text-[10px]">
+                {loadedFileCount} loaded
+              </span>
+            )}
+          </button>
+
+          <button
             onClick={() => handleSelectTab('google-algorithm-updates')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border transition-all cursor-pointer font-medium ${
               currentTab === 'google-algorithm-updates'
@@ -188,10 +211,16 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             </span>
           </button>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-300">
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${hasUploadedData ? 'bg-blue-950/80 border-blue-500 text-blue-100' : 'bg-slate-800/90 border-slate-700 text-slate-300'}`}>
             <Clock className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Latest Complete: <strong className="text-white font-mono">{propertyTotals.latestCompleteDate}</strong></span>
-            <span className="text-[10px] text-slate-400 font-normal">({propertyTotals.reportingLagDays}d lag)</span>
+            {hasUploadedData ? (
+              <span><strong className="font-mono">UPLOADED DATA ACTIVE</strong></span>
+            ) : (
+              <>
+                <span>Latest Complete: <strong className="text-white font-mono">{propertyTotals.latestCompleteDate}</strong></span>
+                <span className="text-[10px] text-slate-400 font-normal">({propertyTotals.reportingLagDays}d lag)</span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-300">
