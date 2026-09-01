@@ -27,6 +27,7 @@ import {
   Sparkles,
   Trophy,
   UploadCloud,
+  Target,
 } from 'lucide-react';
 import { ActiveTab, DashboardFilterState, PropertyTotals } from '../types';
 import { FilterDropdownPanel } from './FilterDropdownPanel';
@@ -112,6 +113,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
     { id: 'page-directory', label: '3. Pages & Directories', icon: FileText },
     { id: 'page-group-level', label: '4. Page Group & Level', icon: Layers },
     { id: 'query-opportunities', label: '5. Queries & Opportunities', icon: Search },
+    { id: 'bulk-seo-opportunities', label: 'Bulk SEO Opportunities', icon: Target },
     { id: 'geographic-device', label: '6. Geo & Devices', icon: Globe },
     { id: 'sitemap-taxonomy', label: '7. Taxonomy & Sitemaps', icon: Layers },
     { id: 'methodology', label: '8. Methodology & Audit', icon: HelpCircle },
@@ -160,7 +162,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950">
               <Compass className="w-4 h-4" />
             </div>
-            <span className="font-black text-sm tracking-tight">ToursByLocals SEO Dashboard</span>
+            <span className="font-black text-sm tracking-tight">SEO Performance Dashboard</span>
             <span className="hidden sm:inline text-[10px] text-slate-400 font-mono truncate">{propertyTotals.propertyName}</span>
             {hasUploadedData && (
               <span className="px-2 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-blue-200 text-[10px] font-bold">
@@ -197,8 +199,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                ToursByLocals
-                <span className="text-emerald-400 font-medium text-sm">SEO Dashboard</span>
+                SEO Performance
+                <span className="text-emerald-400 font-medium text-sm">Dashboard</span>
               </h1>
               <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[11px] font-mono text-emerald-400">
                 {propertyTotals.propertyName}

@@ -49,6 +49,13 @@ export const REPORT_MENU_ITEMS: ReportItem[] = [
     badge: 'Data',
     icon: Database,
   },
+  {
+    id: 'bulk-seo-opportunities',
+    title: 'Bulk SEO Opportunities & Actions',
+    category: 'opportunities',
+    badge: 'Bulk',
+    icon: Target,
+  },
   // Category & Template Performance
   {
     id: 'category-performance-matrix',

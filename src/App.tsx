@@ -48,6 +48,7 @@ import { PageGroupLevelPerformanceView } from './components/PageGroupLevelPerfor
 import { TaxonomyClassificationSection } from './components/TaxonomyClassificationSection';
 import { MethodologyDataQualitySection } from './components/MethodologyDataQualitySection';
 import UploadCenter from './components/UploadCenter';
+import { BulkSeoOpportunitiesReport } from './components/BulkSeoOpportunitiesReport';
 import { calculateGscPageGroup, calculateGscPageLevel } from './utils/gscTaxonomyEngine';
 
 function mergePages(rows: PagePerformance[]): TblPageItem[] {
@@ -364,6 +365,10 @@ export default function App() {
             />
           )}
 
+          {activeSection === 'bulk-seo-opportunities' && (
+            <BulkSeoOpportunitiesReport pages={activePages} queries={activeQueries} />
+          )}
+
           {/* Section 1: Executive Summary */}
           {(activeSection === 'executive' || activeSection === 'executive-summary') && (
             <ExecutiveSummarySection
@@ -480,11 +485,11 @@ export default function App() {
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white font-bold tracking-tight">ToursByLocals SEO Dashboard</span>
+              <span className="text-white font-bold tracking-tight">SEO Performance Dashboard</span>
             </div>
             <span className="hidden sm:inline text-slate-600">|</span>
             <span className="text-slate-300">
-              © 2026 ToursByLocals. Developed by <span className="text-emerald-400 font-semibold">Ami - SEO Girl</span>. All rights reserved.
+              © 2026 SEO Performance Dashboard. Developed by <span className="text-emerald-400 font-semibold">Ami - SEO Girl</span>. All rights reserved.
             </span>
           </div>
 

@@ -1,6 +1,6 @@
 {
-  "name": "ToursByLocals SEO Dashboard",
-  "description": "ToursByLocals Google Search Console SEO performance dashboard. Developed by Ami - SEO Girl. Featuring URL taxonomy classification, GSC calculated dimensions, category performance and sitemap audits.",
+  "name": "SEO Performance Dashboard",
+  "description": "Google Search Console SEO performance dashboard. Developed by Ami - SEO Girl. Featuring URL taxonomy classification, GSC calculated dimensions, category performance and sitemap audits.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
