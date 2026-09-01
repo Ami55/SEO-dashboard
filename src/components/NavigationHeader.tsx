@@ -160,7 +160,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950">
               <Compass className="w-4 h-4" />
             </div>
-            <span className="font-black text-sm tracking-tight">SemanticMapper</span>
+            <span className="font-black text-sm tracking-tight">ToursByLocals SEO Dashboard</span>
             <span className="hidden sm:inline text-[10px] text-slate-400 font-mono truncate">{propertyTotals.propertyName}</span>
             {hasUploadedData && (
               <span className="px-2 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-blue-200 text-[10px] font-bold">
@@ -197,8 +197,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                SemanticMapper
-                <span className="text-emerald-400 font-medium text-sm">SEO Platform</span>
+                ToursByLocals
+                <span className="text-emerald-400 font-medium text-sm">SEO Dashboard</span>
               </h1>
               <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[11px] font-mono text-emerald-400">
                 {propertyTotals.propertyName}
@@ -274,7 +274,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
       </div>
       )}
 
-      {/* Global Filter Bar */}
+      {/* Global Filter Bar: part of the collapsible report controls */}
+      {heroExpanded && (
       <div className="bg-slate-950/80 border-t border-slate-800/80 px-4 sm:px-6 py-2" ref={dropdownRef}>
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           {/* Selectors & Multi-Select Dropdowns */}
@@ -448,6 +449,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           )}
         </div>
       </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex overflow-x-auto no-scrollbar border-t border-slate-800">

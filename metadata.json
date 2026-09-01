@@ -1,6 +1,6 @@
 {
-  "name": "SemanticMapper",
-  "description": "Enterprise Google Search Console SEO Performance Dashboard by SemanticMapper Inc. Developed by Ami - SEO Girl. Featuring 23-priority URL Taxonomy Classification, GSC Calculated Dimensions, Category Matrix, and Sitemap Audits.",
+  "name": "ToursByLocals SEO Dashboard",
+  "description": "ToursByLocals Google Search Console SEO performance dashboard. Developed by Ami - SEO Girl. Featuring URL taxonomy classification, GSC calculated dimensions, category performance and sitemap audits.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
