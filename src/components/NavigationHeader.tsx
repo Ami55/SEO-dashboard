@@ -22,6 +22,7 @@ import {
   TrendingUp,
   MapPin,
   ChevronDown,
+  ChevronUp,
   X,
   Sparkles,
   Trophy,
@@ -91,6 +92,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 
   // Popover state for Page Group & Page Level multi-select dropdowns
   const [openDropdown, setOpenDropdown] = useState<'page-group' | 'page-level' | null>(null);
+  const [heroExpanded, setHeroExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
@@ -152,7 +154,40 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 
   return (
     <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+      {!heroExpanded && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950">
+              <Compass className="w-4 h-4" />
+            </div>
+            <span className="font-black text-sm tracking-tight">SemanticMapper</span>
+            <span className="hidden sm:inline text-[10px] text-slate-400 font-mono truncate">{propertyTotals.propertyName}</span>
+            {hasUploadedData && (
+              <span className="px-2 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-blue-200 text-[10px] font-bold">
+                UPLOADED DATA ACTIVE
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleSelectTab('upload-data')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[11px] font-black border border-emerald-300 shadow-md shadow-emerald-500/20"
+            >
+              <UploadCloud className="w-3.5 h-3.5" /> UPLOAD GSC DATA
+              {hasUploadedData && <span className="rounded-full bg-slate-950 text-emerald-300 px-1.5">{loadedFileCount}</span>}
+            </button>
+            <button
+              onClick={() => setHeroExpanded(true)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold"
+              aria-expanded={false}
+            >
+              <ChevronDown className="w-3.5 h-3.5" /> Show header
+            </button>
+          </div>
+        </div>
+      )}
       {/* Top Brand & Metadata Bar */}
+      {heroExpanded && (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         {/* Brand Logo & Title */}
         <div className="flex items-center gap-3">
@@ -227,8 +262,17 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
             <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
             <span>Refreshed: <span className="text-slate-200 font-mono">{propertyTotals.lastRefreshed}</span></span>
           </div>
+
+          <button
+            onClick={() => setHeroExpanded(false)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold"
+            aria-expanded={true}
+          >
+            <ChevronUp className="w-3.5 h-3.5" /> Hide header
+          </button>
         </div>
       </div>
+      )}
 
       {/* Global Filter Bar */}
       <div className="bg-slate-950/80 border-t border-slate-800/80 px-4 sm:px-6 py-2" ref={dropdownRef}>
