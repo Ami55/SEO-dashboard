@@ -19,43 +19,43 @@ import {
 export const GSC_PAGE_GROUP_CASE_SQL = `CASE
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tours/essentials-tours/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tours/essentials-tours/?($|\\\\?)"
   )
     THEN "Essential Tours"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tour-guides/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tour-guides/?($|/|\\\\?)"
   )
     THEN "Tour Guides"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/shore-excursions/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/shore-excursions/?($|/|\\\\?)"
   )
     THEN "Shore Excursions"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/safaris/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/safaris/?($|/|\\\\?)"
   )
     THEN "Safaris"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/travel-blog/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/travel-blog/?($|/|\\\\?)"
   )
     THEN "Travel Blog"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/things-to-do/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/things-to-do/?($|/|\\\\?)"
   )
     THEN "Things to Do"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tours/?($|/|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tours/?($|/|\\\\?)"
   )
     THEN "Tours"
 
@@ -65,115 +65,115 @@ END`;
 export const GSC_PAGE_LEVEL_CASE_SQL = `CASE
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tours/essentials-tours/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tours/essentials-tours/?($|\\\\?)"
   )
     THEN "Special Landing Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tours/[^/?]+/[^/?]+/tour-details/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tours/[^/?]+/[^/?]+/tour-details/[^/?]+/?($|\\\\?)"
   )
     THEN "Tour Detail Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/attractions/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/attractions/[^/?]+/?($|\\\\?)"
   )
     THEN "Attraction Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/tours/[^/?]+/[^/?]+/shore-ex-tours/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/tours/[^/?]+/[^/?]+/shore-ex-tours/?($|\\\\?)"
   )
     THEN "Cruise Destination Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/shore-excursions/[^/?]+/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/shore-excursions/[^/?]+/[^/?]+/?($|\\\\?)"
   )
     THEN "Cruise Ship Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/shore-excursions/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/shore-excursions/[^/?]+/?($|\\\\?)"
   )
     THEN "Cruise Line Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/[^/?]+-tours/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/[^/?]+-tours/?($|\\\\?)"
   )
     THEN "Tour Category Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/(tours|tour-guides)/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/(tours|tour-guides)/?($|\\\\?)"
   )
     THEN "Directory Root"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/(tours|tour-guides)/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/(tours|tour-guides)/[^/?]+/?($|\\\\?)"
   )
     THEN "Country Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/(tours|tour-guides)/[^/?]+/[^/?]+/?($|\\\\?)"
   )
     THEN "City or Area Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/things-to-do/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/things-to-do/?($|\\\\?)"
   )
     THEN "Directory Root"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/things-to-do/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/things-to-do/[^/?]+/?($|\\\\?)"
   )
     THEN "Country Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/things-to-do/[^/?]+/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/things-to-do/[^/?]+/[^/?]+/?($|\\\\?)"
   )
     THEN "City or Area Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/travel-blog/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/travel-blog/?($|\\\\?)"
   )
     THEN "Directory Root"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/travel-blog/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/travel-blog/[^/?]+/?($|\\\\?)"
   )
     THEN "Blog Post"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/shore-excursions/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/shore-excursions/?($|\\\\?)"
   )
     THEN "Directory Root"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/safaris/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/safaris/?($|\\\\?)"
   )
     THEN "Directory Root"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/safaris/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/safaris/[^/?]+/?($|\\\\?)"
   )
     THEN "Country Page"
 
   WHEN REGEXP_CONTAINS(
     Landing Page,
-    "^https?://(www\\\\.)?toursbylocals\\\\.com/safaris/[^/?]+/[^/?]+/?($|\\\\?)"
+    "^https?://(www\\\\.)?example\\\\.com/safaris/[^/?]+/[^/?]+/?($|\\\\?)"
   )
     THEN "City or Area Page"
 
@@ -184,24 +184,24 @@ END`;
  * Executes the exact Looker Studio / BigQuery GSC Data-Source Level Calculated Field regex formula for Page Group.
  */
 export function calculateGscPageGroup(landingPage: string): PageGroup {
-  return classifyToursByLocalsUrl(landingPage).pageGroup;
+  return classifyDirectoryUrl(landingPage).pageGroup;
 }
 
 /**
  * Executes the exact Looker Studio / BigQuery GSC Data-Source Level Calculated Field regex formula for Page Level.
  */
 export function calculateGscPageLevel(landingPage: string): PageLevel {
-  return classifyToursByLocalsUrl(landingPage).pageLevel;
+  return classifyDirectoryUrl(landingPage).pageLevel;
 }
 
-/** Canonical ToursByLocals directory classifier. Specific templates are
+/** Canonical travel-site directory classifier. Specific templates are
  * evaluated before their parent directories to prevent detail, attraction,
  * and guide-profile URLs from being rolled into generic Tours/Tour Guides. */
-export function classifyToursByLocalsUrl(landingPage: string): { pageGroup: PageGroup; pageLevel: PageLevel } {
+export function classifyDirectoryUrl(landingPage: string): { pageGroup: PageGroup; pageLevel: PageLevel } {
   const url = landingPage.trim();
   const fullUrl = url.startsWith('http')
     ? url
-    : `https://www.toursbylocals.com${url.startsWith('/') ? '' : '/'}${url}`;
+    : `https://www.example.com${url.startsWith('/') ? '' : '/'}${url}`;
   let segments: string[] = [];
   try {
     segments = new URL(fullUrl).pathname.split('/').filter(Boolean);
@@ -283,61 +283,61 @@ export function classifyToursByLocalsUrl(landingPage: string): { pageGroup: Page
   /* Legacy regex reference retained below for SQL parity documentation. */
   /*
 
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/essentials-tours\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/tours\/essentials-tours\/?($|\?)/i.test(fullUrl)) {
     return 'Special Landing Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/[^/?]+\/[^/?]+\/tour-details\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/tours\/[^/?]+\/[^/?]+\/tour-details\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Tour Detail Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/attractions\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/attractions\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Attraction Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/tours\/[^/?]+\/[^/?]+\/shore-ex-tours\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/tours\/[^/?]+\/[^/?]+\/shore-ex-tours\/?($|\?)/i.test(fullUrl)) {
     return 'Cruise Destination Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/shore-excursions\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/shore-excursions\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Cruise Ship Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/shore-excursions\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/shore-excursions\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Cruise Line Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/[^/?]+-tours\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/[^/?]+-tours\/?($|\?)/i.test(fullUrl)) {
     return 'Tour Category Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/(tours|tour-guides)\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/(tours|tour-guides)\/?($|\?)/i.test(fullUrl)) {
     return 'Directory Root';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/(tours|tour-guides)\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/(tours|tour-guides)\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Country Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/(tours|tour-guides)\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'City or Area Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/things-to-do\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/things-to-do\/?($|\?)/i.test(fullUrl)) {
     return 'Directory Root';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/things-to-do\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/things-to-do\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Country Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/things-to-do\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/things-to-do\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'City or Area Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/travel-blog\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/travel-blog\/?($|\?)/i.test(fullUrl)) {
     return 'Directory Root';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/travel-blog\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/travel-blog\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Blog Post';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/shore-excursions\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/shore-excursions\/?($|\?)/i.test(fullUrl)) {
     return 'Directory Root';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/safaris\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/safaris\/?($|\?)/i.test(fullUrl)) {
     return 'Directory Root';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/safaris\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/safaris\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'Country Page';
   }
-  if (/^https?:\/\/(www\.)?toursbylocals\.com\/safaris\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
+  if (/^https?:\/\/(www\.)?example\.com\/safaris\/[^/?]+\/[^/?]+\/?($|\?)/i.test(fullUrl)) {
     return 'City or Area Page';
   }
   return 'Other'; */
@@ -364,7 +364,7 @@ export function normalizeLandingPage(rawUrl: string): NormalizedUrlResult {
       rawUrl: '',
       normalizedUrl: '/',
       normalizedPath: '/',
-      hostname: 'www.toursbylocals.com',
+      hostname: 'www.example.com',
       queryParamsRemoved: [],
       trailingSlashRemoved: false,
       isHomepage: true,
@@ -372,7 +372,7 @@ export function normalizeLandingPage(rawUrl: string): NormalizedUrlResult {
   }
 
   let working = rawUrl.trim();
-  let hostname = 'www.toursbylocals.com';
+  let hostname = 'www.example.com';
   let queryParamsRemoved: string[] = [];
   let fragmentRemoved: string | undefined = undefined;
 
@@ -989,7 +989,7 @@ export function classifyWith23Priorities(
   if (
     exactSitemapMatch?.category === 'Static Pages Sitemap' ||
     [
-      '/why-choose-tours-by-locals',
+      '/why-choose-example-travel',
       '/become-a-guide',
       '/become-a-travel-agency',
       '/about-us',

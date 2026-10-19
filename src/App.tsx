@@ -89,7 +89,7 @@ function mergeQueries(rows: QueryPerformance[]): TblQueryItem[] {
   return Array.from(grouped.entries()).map(([query, periods], index) => {
     const current = periods.current || { query, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'current' as const };
     const previous = periods.previous || { query, clicks: 0, impressions: 0, ctr: 0, position: 0, period: 'previous' as const };
-    const branded = /tours\s*by\s*locals|toursbylocals/i.test(query);
+    const branded = /example\s*travel|example(?:\.com)?/i.test(query);
     return {
       id: `uploaded-query-${index}`,
       query,
