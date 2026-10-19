@@ -637,7 +637,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
                         Method: r.urlClassificationMethod,
                         Rule: r.priorityRuleMatched,
                       })),
-                      'tbl-batch-url-classification'
+                      'gsc-batch-url-classification'
                     )
                   }
                   className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 flex items-center gap-1.5"
@@ -700,7 +700,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(filteredValidationSamples, 'tbl-url-classification-validation')}
+              onClick={() => handleExportCsv(filteredValidationSamples, 'gsc-url-classification-validation')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2 self-start sm:self-auto"
             >
               <Download className="w-4 h-4" /> Export Report (CSV)
@@ -848,7 +848,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(GSC_PAGES_MISSING_FROM_SITEMAPS, 'tbl-gsc-missing-from-sitemaps')}
+              onClick={() => handleExportCsv(GSC_PAGES_MISSING_FROM_SITEMAPS, 'gsc-gsc-missing-from-sitemaps')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
               <Download className="w-4 h-4" /> Export Report (CSV)
@@ -921,7 +921,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
             </div>
             <button
               onClick={() =>
-                handleExportCsv(SITEMAP_URLS_WITH_NO_GSC_VISIBILITY, 'tbl-sitemap-urls-no-gsc-visibility')
+                handleExportCsv(SITEMAP_URLS_WITH_NO_GSC_VISIBILITY, 'gsc-sitemap-urls-no-gsc-visibility')
               }
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
@@ -987,7 +987,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(MULTI_SITEMAP_URLS, 'tbl-multi-sitemap-conflict-audit')}
+              onClick={() => handleExportCsv(MULTI_SITEMAP_URLS, 'gsc-multi-sitemap-conflict-audit')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
               <Download className="w-4 h-4" /> Export Report (CSV)
@@ -1054,7 +1054,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(UNCLASSIFIED_REVIEW_URLS, 'tbl-unclassified-urls-review')}
+              onClick={() => handleExportCsv(UNCLASSIFIED_REVIEW_URLS, 'gsc-unclassified-urls-review')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
               <Download className="w-4 h-4" /> Export Report (CSV)
@@ -1123,7 +1123,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(PILLAR_PAGES_REVIEW_DATA, 'tbl-pillar-pages-matrix')}
+              onClick={() => handleExportCsv(PILLAR_PAGES_REVIEW_DATA, 'gsc-pillar-pages-matrix')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
               <Download className="w-4 h-4" /> Export Matrix (CSV)
@@ -1178,7 +1178,7 @@ export const TaxonomyClassificationSection: React.FC<TaxonomyClassificationSecti
               </p>
             </div>
             <button
-              onClick={() => handleExportCsv(SITEMAP_AUDIT_DATA, 'tbl-13-sitemaps-audit-index')}
+              onClick={() => handleExportCsv(SITEMAP_AUDIT_DATA, 'gsc-13-sitemaps-audit-index')}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-2"
             >
               <Download className="w-4 h-4" /> Export Sitemap Health Index (CSV)
