@@ -78,7 +78,7 @@ export const DirectoryPerformanceSection: React.FC<DirectoryPerformanceSectionPr
           <div>
             <div className="text-xs font-black uppercase tracking-wider text-emerald-600">Live uploaded dataset</div>
             <h1 className="text-2xl font-black text-slate-900 mt-1">Performance by Directory & Page Level</h1>
-            <p className="text-xs text-slate-500 mt-1">Classified from the exact ToursByLocals URL hierarchy, with specific templates evaluated before parent directories.</p>
+            <p className="text-xs text-slate-500 mt-1">Classified from the exact travel-site URL hierarchy, with specific templates evaluated before parent directories.</p>
           </div>
           <button onClick={exportCsv} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-bold">
             <Download className="w-4 h-4" /> Export classification
