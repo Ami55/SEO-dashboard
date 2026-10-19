@@ -989,7 +989,7 @@ export function classifyWith23Priorities(
   if (
     exactSitemapMatch?.category === 'Static Pages Sitemap' ||
     [
-      '/why-choose-tours-by-locals',
+      '/why-choose-example-travel',
       '/become-a-guide',
       '/become-a-travel-agency',
       '/about-us',
