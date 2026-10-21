@@ -489,7 +489,7 @@ export default function App() {
             </div>
             <span className="hidden sm:inline text-slate-600">|</span>
             <span className="text-slate-300">
-              © 2026 SEO Performance Dashboard. Developed by <span className="text-emerald-400 font-semibold">Ami - SEO Girl</span>. All rights reserved.
+              © 2026 SEO Performance Dashboard. Developed by <span className="text-emerald-400 font-semibold"><strong>SEO Girl - Ami</strong></span>. All rights reserved.
             </span>
           </div>
 
